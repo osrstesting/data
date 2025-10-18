@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizador de Seguridad Bancaria - Extendido</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.js"></script>
+<style id="theme-styles">
+    :root {
+        --primary-color: #1e40af;
+        --bg-body: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        --card-bg: white;
+        --text-color: #374151;
+        --border-color: #e5e7eb;
+        --input-bg: #fafafa;
+        --input-focus-border: #dc2626;
+        --shadow-light: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 10px 15px -8px rgba(0, 0, 0, 0.1);
+        --security-card-bg: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+    .dark-mode {
+        --bg-body: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        --card-bg: #1e293b;
+        --text-color: #e2e8f0;
+        --border-color: #334155;
+        --input-bg: #334155;
+        --input-focus-border: #f87171;
+        --shadow-light: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+        --shadow-hover: 0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 10px 15px -8px rgba(0, 0, 0, 0.4);
+        --security-card-bg: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    }
+    body {
+        font-family: 'Inter', sans-serif;
+        background: var(--bg-body);
+        min-height: 100vh;
+        color: var(--text-color);
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+    .form-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: var(--shadow-light);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    .form-card:hover {
+        box-shadow: var(--shadow-hover);
+    }
+    .form-header {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        color: white;
+        padding: 0.8rem;
+        position: relative;
+    }
+    .form-header::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        right: 0;
+        height: 20px;
+        background: linear-gradient(135deg, transparent 0%, rgba(220, 38, 38, 0.1) 100%);
+        border-radius: 50%;
+    }
+    .form-body {
+        padding: 0.8rem;
+    }
+    .form-group {
+        margin-bottom: 1rem;
+        position: relative;
+    }
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .form-label i {
+        color: #dc2626;
+        width: 16px;
+    }
+    .form-input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 10px;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        background: var(--input-bg);
+        color: var(--text-color);
+    }
+    .form-input:focus {
+        outline: none;
+        border-color: var(--input-focus-border);
+        background: var(--card-bg);
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        transform: translateY(-1px);
+    }
+    .form-input:hover {
+        border-color: #d1d5db;
+        background: var(--card-bg);
+    }
+    .validation-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1rem;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    .valid .validation-icon {
+        color: #10b981;
+        opacity: 1;
+    }
+    .invalid .validation-icon {
+        color: #ef4444;
+        opacity: 1;
+    }
+    .grid-form {
+        display: grid;
+        gap: 1rem;
+    }
+    .security-question-card {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 1.25rem;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    .security-question-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+        border-radius: 4px 0 0 4px;
+    }
+    .security-question-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.1);
+    }
+    .section-indicator {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background: white;
+        color: #000;
+        border-radius: 50%;
+        font-weight: bold;
+        font-size: 0.75rem;
+        margin-right: 0.75rem;
+    }
+    .controls-sidebar {
+        background: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        border: 1px solid var(--border-color);
+        position: sticky;
+        top: 1rem;
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e1 transparent;
+    }
+    .controls-sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .controls-sidebar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .controls-sidebar::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 3px;
+    }
+    .controls-sidebar::-webkit-scrollbar-thumb:hover {
+        background-color: #94a3b8;
+    }
+    .control-group {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .control-group:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    .control-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        color: var(--text-color);
+        font-size: 0.8125rem;
+        margin-bottom: 0.375rem;
+    }
+    .control-value {
+        font-weight: 600;
+        color: #dc2626;
+        font-size: 0.8125rem;
+    }
+    .control-slider {
+        width: 100%;
+        height: 5px;
+        background: var(--border-color);
+        border-radius: 10px;
+        outline: none;
+        -webkit-appearance: none;
+    }
+    .control-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        background: #dc2626;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+    }
+    .controls-sidebar .btn {
+        padding: 0.625rem 1rem;
+        font-size: 0.8125rem;
+        gap: 0.375rem;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    .btn {
+        padding: 0.875rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        color: white;
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px -4px rgba(220, 38, 38, 0.4);
+    }
+    .btn-secondary {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        color: white;
+    }
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px -4px rgba(59, 130, 246, 0.4);
+    }
+    .btn-outline {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+    }
+    .btn-outline:hover {
+        background: rgba(59, 130, 246, 0.1);
+        border-color: #3b82f6;
+    }
+    .btn-danger-outline {
+        background: transparent;
+        border: 1px solid #ef4444;
+        color: #ef4444;
+    }
+    .btn-danger-outline:hover {
+        background: rgba(239, 68, 68, 0.1);
+    }
+    .print-sheet {
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        background-color: white;
+        padding: 0.5in;
+        width: 8.5in;
+        min-height: 11in; 
+        margin: 20px auto;
+        position: relative;
+        border: 1px solid #ddd;
+        font-size: var(--print-font-size, 0.8rem);
+    }
+    .print-section-header {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--print-primary-color, #1e40af);
+        border-bottom: 3px solid var(--print-primary-color, #1e40af);
+        padding-bottom: 2px;
+        margin-top: 15px;
+        margin-bottom: 6px;
+    }
+    .data-row {
+        display: flex;
+        margin-bottom: 1px;
+        line-height: 1.2;
+        align-items: center;
+    }
+    .data-label {
+        font-weight: 600;
+        color: #4b5563;
+        width: 110px;
+        flex-shrink: 0;
+        padding-right: 5px;
+        display: flex;
+        align-items: center;
+        min-height: 1.4rem;
+    }
+    .data-value {
+        color: #1f2937;
+        flex-grow: 1;
+        word-break: break-all;
+        display: flex;
+        align-items: center;
+        min-height: 1.4rem;
+    }
+    .password-value {
+        font-family: monospace;
+        letter-spacing: 0.5px;
+        font-weight: bold;
+        color: #b91c1c;
+    }
+    .security-q-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px 10px;
+        margin-top: 5px;
+    }
+    .security-q-row {
+        display: flex;
+        flex-direction: column;
+        border-bottom: 1px dotted #ccc;
+        padding-bottom: 2px;
+    }
+    .coord-card-img {
+        max-width: 100%;
+        height: auto;
+        object-fit: contain;
+        border: 1px solid #ddd;
+        margin-top: 5px;
+    }
+    .debit-card-visual {
+        width: 95%;
+        height: 120px;
+        background: linear-gradient(135deg, #1f2937 0%, #4b5563 100%);
+        border-radius: 12px;
+        padding: 15px;
+        color: white;
+        font-family: monospace;
+        margin: 10px 0;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        position: relative;
+    }
+    .debit-card-chip {
+        width: 28px;
+        height: 20px;
+        background: #e0ac43;
+        border-radius: 3px;
+        margin-bottom: 10px;
+        border: 1px solid #c99839;
+    }
+    .debit-card-logo {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #e5e7eb;
+        text-align: right;
+    }
+    .debit-card-number {
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+        margin: 5px 0 10px 0;
+        font-weight: 500;
+    }
+    .debit-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.7rem;
+        font-weight: 500;
+    }
+    .debit-card-expiry {
+        font-weight: bold;
+        color: #fcd34d;
+    }
+    .additional-notes-pre {
+        white-space: pre-wrap;
+        word-break: break-all;
+        font-family: monospace;
+    }
+    @media print {
+        body, html {
+            background: white !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+        body * {
+            visibility: hidden;
+        }
+        #print-preview-section,
+        #print-preview-section * {
+            visibility: visible !important;
+        }
+        #print-preview-section {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+        }
+        .print-sheet {
+            display: block !important;
+            margin: 0 auto !important;
+            padding: 0.5in !important;
+            width: 8.5in !important;
+            min-height: 11in !important;
+            box-shadow: none !important;
+            border: none !important;
+            page-break-after: avoid;
+            page-break-inside: avoid;
+            background: white !important;
+            position: relative !important;
+        }
+        .no-print,
+        .page-header,
+        .controls-sidebar,
+        .form-card,
+        .btn,
+        #print-preview-section > .flex {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        #print-sheet-container {
+            width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        #print-sheet * {
+            visibility: visible !important;
+        }
+        #print-sheet img {
+            visibility: visible !important;
+            display: inline-block !important;
+            max-width: 100% !important;
+            height: auto !important;
+        }
+    }
+    .no-print {
+        display: block;
+    }
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+    }
+    .security-questions-compact {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    .security-question-compact {
+        background: var(--security-card-bg);
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    .security-question-compact::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 3px;
+        height: 100%;
+        background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+        border-radius: 3px 0 0 3px;
+    }
+    .security-question-compact:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+    }
+    .security-question-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        align-items: start;
+    }
+    .security-question-label {
+        display: block;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.25rem;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    .security-question-input {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        background: var(--input-bg);
+        color: var(--text-color);
+    }
+    .security-question-input:focus {
+        outline: none;
+        border-color: var(--input-focus-border);
+        background: var(--card-bg);
+        box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.1);
+        transform: translateY(0);
+    }
+    .security-question-input:hover {
+        border-color: #d1d5db;
+        background: var(--card-bg);
+    }
+    .theme-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+    }
+    .theme-toggle:hover {
+        transform: scale(1.1);
+    }
+    #print-sheet,
+    #print-sheet *,
+    #print-sheet .data-row,
+    #print-sheet .data-label,
+    #print-sheet .data-value {
+        -webkit-user-select: text !important;
+        -moz-user-select: text !important;
+        -ms-user-select: text !important;
+        user-select: text !important;
+        cursor: text !important;
+    }
+    /* Modal de plantilla */
+    #template-modal {
+        z-index: 1000;
+    }
+    #template-textarea {
+        resize: none;
+        font-family: 'Courier New', monospace;
+    }
+    /* Checkboxes escalados al 150% */
+    input[type="checkbox"] {
+        transform: scale(1.5);
+        margin-right: 8px;
+    }
+</style>
+</head>
+<body class="p-4 md:p-8">
+    <!-- Toggle de tema en esquina superior derecha -->
+    <div class="theme-toggle no-print" id="theme-toggle">
+        <i class="fas fa-moon text-gray-700 dark:text-yellow-300"></i>
+    </div>
+    <!-- Modal de Plantilla -->
+    <div id="template-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden no-print">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl p-6 relative">
+            <button id="close-template-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">📄 Plantilla para Enviar Datos</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                Copia esta plantilla, llénala y envíala de vuelta. Usa el formato exacto.
+            </p>
+            <textarea id="template-textarea" class="w-full h-80 p-3 border rounded-lg font-mono text-sm bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600" readonly></textarea>
+            <div class="flex gap-2 mt-4">
+                <button id="copy-template-btn" class="btn btn-secondary flex-1">
+                    <i class="fas fa-copy"></i> Copiar Plantilla
+                </button>
+                <button id="fill-template-example" class="btn btn-outline flex-1">
+                    <i class="fas fa-magic"></i> Ejemplo
+                </button>
+                <button id="clear-template-btn" class="btn btn-outline flex-1 text-red-600 border-red-600">
+                    <i class="fas fa-eraser"></i> Vaciar
+                </button>
+            </div>
+        </div>
+    </div>
+    <main class="max-w-7xl mx-auto">
+        <header class="page-header mb-8 text-center no-print">
+            <div class="flex items-center justify-center gap-4 mb-4">
+                <div class="w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <i class="fas fa-lock text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-extrabold text-gray-800 dark:text-white">Organizador de Seguridad Bancaria</h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-2">Gestión segura y profesional de credenciales bancarias</p>
+                </div>
+            </div>
+        </header>
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+            <!-- Panel de controles lateral -->
+            <div class="xl:col-span-1 no-print">
+                <div class="controls-sidebar">
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-6 flex items-center gap-2">
+                        <i class="fas fa-sliders-h text-red-600"></i>
+                        Configuración del Documento
+                    </h3>
+                    <div class="control-group">
+                        <label class="control-label flex justify-between">
+                            <span>Tamaño de Letra</span>
+                            <span id="font-size-value" class="control-value">0.8rem</span>
+                        </label>
+                        <input type="range" id="font-size-slider" min="0.7" max="1.0" step="0.05" value="0.8" class="control-slider">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label flex justify-between">
+                            <span>Tamaño del Banner</span>
+                            <span id="banner-size-value" class="control-value">1.0x</span>
+                        </label>
+                        <input type="range" id="banner-size-slider" min="0.8" max="1.5" step="0.1" value="1.0" class="control-slider">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label flex justify-between">
+                            <span>Altura de Coordenadas</span>
+                            <span id="coord-size-value" class="control-value">1.0x</span>
+                        </label>
+                        <input type="range" id="coord-size-slider" min="0.5" max="2.0" step="0.1" value="1.0" class="control-slider">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label flex items-center gap-2">
+                            <input type="checkbox" id="use-bank-color-checkbox" class="mr-1" checked>
+                            <i class="fas fa-palette"></i>
+                            Usar color del banco
+                        </label>
+                        <p class="text-xs text-gray-500 mt-1 dark:text-gray-400">
+                            Aplica el color corporativo del banco en la hoja de impresión.
+                        </p>
+                    </div>
+                    <div class="mt-8 space-y-3">
+                        <button id="paste-external-data" class="btn btn-secondary w-full">
+                            <i class="fas fa-paste"></i>
+                            Pegar Datos Externos
+                        </button>
+                        <!-- NUEVOS BOTONES -->
+                        <button id="export-to-template-button" class="btn btn-outline w-full">
+                            <i class="fas fa-file-export"></i>
+                            Exportar a Plantilla (.txt)
+                        </button>
+                        <button id="load-from-template-button" class="btn btn-outline w-full">
+                            <i class="fas fa-file-import"></i>
+                            Cargar Plantilla (.txt)
+                        </button>
+                        <!-- FIN NUEVOS BOTONES -->
+                        <button id="show-template-button" class="btn btn-secondary w-full">
+                            <i class="fas fa-file-alt"></i>
+                            Ver Plantilla para Cliente
+                        </button>
+                        <button id="fill-example-button" class="btn btn-outline w-full">
+                            <i class="fas fa-magic"></i>
+                            Datos de Ejemplo
+                        </button>
+                        <button id="save-draft-button" class="btn btn-outline w-full">
+                            <i class="fas fa-save"></i>
+                            Guardar Borrador
+                        </button>
+                        <button id="clear-all-button" class="btn btn-danger-outline w-full">
+                            <i class="fas fa-trash"></i>
+                            Limpiar Todo
+                        </button>
+                        <button id="print-button" class="btn btn-primary w-full">
+                            <i class="fas fa-print"></i>
+                            Imprimir Documento
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Contenido principal -->
+            <div class="xl:col-span-3">
+                <!-- Secciones 1 a 6 -->
+                <div class="space-y-4 mb-8 no-print">
+                    <!-- Sección 1 -->
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h3 class="text-xl font-bold flex items-center">
+                                <span class="section-indicator">1</span>
+                                Información del Banco y Titular
+                            </h3>
+                        </div>
+                        <div class="form-body">
+                            <div class="grid-form grid-cols-1 md:grid-cols-2">
+                                <div class="form-group">
+                                    <label for="bank-selector" class="form-label">
+                                        <i class="fas fa-university"></i>
+                                        Banco Principal
+                                    </label>
+                                    <select id="bank-selector" class="form-input">
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="full-name-input" class="form-label">
+                                        <i class="fas fa-user"></i>
+                                        Nombre Completo del Titular
+                                    </label>
+                                    <input type="text" id="full-name-input" placeholder="Ej: ANA MERCEDES RAMIREZ ROJAS" class="form-input">
+                                    <i class="fas fa-check-circle validation-icon text-green-500"></i>
+                                    <i class="fas fa-exclamation-circle validation-icon text-red-500"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="id-number-input-main" class="form-label">
+                                        <i class="fas fa-id-card"></i>
+                                        ID/Cédula
+                                    </label>
+                                    <input type="text" id="id-number-input-main" placeholder="ID para identificación" class="form-input">
+                                    <i class="fas fa-check-circle validation-icon text-green-500"></i>
+                                    <i class="fas fa-exclamation-circle validation-icon text-red-500"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="account-number-input-main" class="form-label">
+                                        <i class="fas fa-credit-card"></i>
+                                        Número de Cuenta
+                                    </label>
+                                    <input type="text" id="account-number-input-main" placeholder="Número completo" class="form-input" maxlength="23">
+                                    <i class="fas fa-check-circle validation-icon text-green-500"></i>
+                                    <i class="fas fa-exclamation-circle validation-icon text-red-500"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="account-type-input-main" class="form-label">
+                                        <i class="fas fa-list"></i>
+                                        Tipo de Cuenta
+                                    </label>
+                                    <select id="account-type-input-main" class="form-input">
+                                        <option value="Corriente">Corriente</option>
+                                        <option value="Ahorro">Ahorro</option>
+                                        <option value="Divisas">Divisas</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Sección 2 -->
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h3 class="text-xl font-bold flex items-center">
+                                <span class="section-indicator">2</span>
+                                Acceso Web
+                            </h3>
+                        </div>
+                        <div class="form-body">
+                            <div class="grid-form grid-cols-1 md:grid-cols-2">
+                                <div class="form-group">
+                                    <label for="web-user-input" class="form-label">
+                                        <i class="fas fa-user-circle"></i>
+                                        Usuario Web
+                                    </label>
+                                    <input type="text" id="web-user-input" placeholder="Usuario de acceso" class="form-input">
+                                    <i class="fas fa-check-circle validation-icon text-green-500"></i>
+                                    <i class="fas fa-exclamation-circle validation-icon text-red-500"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="web-password-input" class="form-label">
+                                        <i class="fas fa-key"></i>
+                                        Clave Web
+                                    </label>
+                                    <input type="text" id="web-password-input" placeholder="Contraseña" class="form-input">
+                                    <i class="fas fa-check-circle validation-icon text-green-500"></i>
+                                    <i class="fas fa-exclamation-circle validation-icon text-red-500"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="op-password-input" class="form-label">
+                                        <i class="fas fa-lock"></i>
+                                        Clave Operaciones
+                                    </label>
+                                    <input type="text" id="op-password-input" placeholder="Clave Especial" class="form-input">
+                                    <i class="fas fa-check-circle validation-icon text-green-500"></i>
+                                    <i class="fas fa-exclamation-circle validation-icon text-red-500"></i>
+                                </div>
+                                <!-- AGRUPACIÓN DE CHECKBOXES -->
+                                <div class="form-group">
+                                    <div class="space-y-2">
+                                        <label class="form-label flex items-center gap-2">
+                                            <input type="checkbox" id="include-card-in-access" class="mr-2" checked>
+                                            <i class="fas fa-credit-card"></i>
+                                            Incluir tarjeta en Datos de Acceso
+                                        </label>
+                                        <label class="form-label flex items-center gap-2">
+                                            <input type="checkbox" id="include-id-in-access" class="mr-2" checked>
+                                            <i class="fas fa-id-card"></i>
+                                            Incluir Cédula/ID en Datos de Acceso
+                                        </label>
+                                        <label class="form-label flex items-center gap-2">
+                                            <input type="checkbox" id="include-op-password" class="mr-2" checked>
+                                            <i class="fas fa-lock"></i>
+                                            Incluir Clave Operaciones
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group md:col-span-2">
+                                    <label class="form-label flex items-center gap-2">
+                                        <input type="checkbox" id="include-security-image" class="mr-2" checked>
+                                        <i class="fas fa-image"></i>
+                                        Incluir Imagen de Seguridad
+                                    </label>
+                                    <textarea id="security-image-desc-input" rows="2" placeholder="Descripción de la imagen de seguridad" class="form-input"></textarea>
+                                </div>
+                                <div class="form-group md:col-span-2">
+                                    <label class="form-label flex items-center gap-2">
+                                        <input type="checkbox" id="include-alt-entry" class="mr-2" checked>
+                                        <i class="fas fa-sign-in-alt"></i>
+                                        Incluir Método Alternativo
+                                    </label>
+                                    <textarea id="alt-entry-notes-input" rows="2" placeholder="Método de ingreso alternativo" class="form-input"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Sección 3 -->
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h3 class="text-xl font-bold flex items-center">
+                                <span class="section-indicator">3</span>
+                                Tarjeta de Débito
+                            </h3>
+                        </div>
+                        <div class="form-body">
+                            <div class="grid-form grid-cols-1 md:grid-cols-2">
+                                <div class="form-group md:col-span-2">
+                                    <label for="debit-number-input" class="form-label">
+                                        <i class="fas fa-credit-card"></i>
+                                        Número de Tarjeta
+                                    </label>
+                                    <input type="text" id="debit-number-input" placeholder="16 dígitos" class="form-input" maxlength="19">
+                                    <i class="fas fa-check-circle validation-icon text-green-500"></i>
+                                    <i class="fas fa-exclamation-circle validation-icon text-red-500"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="debit-name-input" class="form-label">
+                                        <i class="fas fa-signature"></i>
+                                        Nombre en Tarjeta
+                                    </label>
+                                    <input type="text" id="debit-name-input" placeholder="Ej: A. RAMIREZ" class="form-input">
+                                    <i class="fas fa-check-circle validation-icon text-green-500"></i>
+                                    <i class="fas fa-exclamation-circle validation-icon text-red-500"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="debit-expiry-input" class="form-label">
+                                        <i class="fas fa-calendar"></i>
+                                        Vencimiento
+                                    </label>
+                                    <input type="text" id="debit-expiry-input" placeholder="MM/AA" class="form-input" maxlength="5">
+                                    <i class="fas fa-check-circle validation-icon text-green-500"></i>
+                                    <i class="fas fa-exclamation-circle validation-icon text-red-500"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="debit-cvc-input" class="form-label">
+                                        <i class="fas fa-shield-alt"></i>
+                                        CVV/CVC
+                                    </label>
+                                    <input type="text" id="debit-cvc-input" placeholder="3 dígitos" class="form-input" maxlength="4">
+                                    <i class="fas fa-check-circle validation-icon text-green-500"></i>
+                                    <i class="fas fa-exclamation-circle validation-icon text-red-500"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="debit-pin-input" class="form-label">
+                                        <i class="fas fa-lock"></i>
+                                        PIN (4-6 dígitos)
+                                    </label>
+                                    <input type="text" id="debit-pin-input" placeholder="4-6 dígitos" class="form-input" maxlength="6">
+                                    <i class="fas fa-check-circle validation-icon text-green-500"></i>
+                                    <i class="fas fa-exclamation-circle validation-icon text-red-500"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Sección 4 -->
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h3 class="text-xl font-bold flex items-center">
+                                <span class="section-indicator">4</span>
+                                Contacto y Pago Móvil
+                            </h3>
+                        </div>
+                        <div class="form-body">
+                            <div class="grid-form grid-cols-1 md:grid-cols-2">
+                                <div class="form-group">
+                                    <label for="email-input" class="form-label">
+                                        <i class="fas fa-envelope"></i>
+                                        Correo Electrónico
+                                    </label>
+                                    <input type="email" id="email-input" placeholder="Correo vinculado" class="form-input">
+                                    <i class="fas fa-check-circle validation-icon text-green-500"></i>
+                                    <i class="fas fa-exclamation-circle validation-icon text-red-500"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email-password-input" class="form-label">
+                                        <i class="fas fa-key"></i>
+                                        Clave de Correo
+                                    </label>
+                                    <input type="text" id="email-password-input" placeholder="Clave del correo" class="form-input">
+                                    <i class="fas fa-check-circle validation-icon text-green-500"></i>
+                                    <i class="fas fa-exclamation-circle validation-icon text-red-500"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone-number-input" class="form-label">
+                                        <i class="fas fa-phone"></i>
+                                        Teléfono Móvil
+                                    </label>
+                                    <input type="text" id="phone-number-input" placeholder="Número para pago móvil" class="form-input">
+                                    <i class="fas fa-check-circle validation-icon text-green-500"></i>
+                                    <i class="fas fa-exclamation-circle validation-icon text-red-500"></i>
+                                </div>
+                                <div class="form-group">
+                                    <label for="id-number-input" class="form-label">
+                                        <i class="fas fa-id-card"></i>
+                                        ID/Cédula
+                                    </label>
+                                    <input type="text" id="id-number-input" placeholder="ID para pago móvil" class="form-input">
+                                    <i class="fas fa-check-circle validation-icon text-green-500"></i>
+                                    <i class="fas fa-exclamation-circle validation-icon text-red-500"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Sección 5 -->
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h3 class="text-xl font-bold flex items-center">
+                                <span class="section-indicator">5</span>
+                                Preguntas de Seguridad
+                            </h3>
+                        </div>
+                        <div class="form-body">
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="fas fa-sliders-h"></i>
+                                    Número de preguntas de seguridad (1–8):
+                                </label>
+                                <input type="number" id="num-questions-input" min="1" max="8" value="3" class="form-input w-24">
+                            </div>
+                            <div id="security-questions-container" class="security-questions-compact">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Sección 6 -->
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h3 class="text-xl font-bold flex items-center">
+                                <span class="section-indicator">6</span>
+                                Información Adicional
+                            </h3>
+                        </div>
+                        <div class="form-body">
+                            <div class="grid-form">
+                                <div class="form-group">
+                                    <label for="third-party-accounts-input" class="form-label">
+                                        <i class="fas fa-users"></i>
+                                        Otras Cuentas
+                                    </label>
+                                    <textarea id="third-party-accounts-input" rows="3" placeholder="Banco/Número/Tipo/Titular de cuentas" class="form-input"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="additional-cards-input" class="form-label">
+                                        <i class="fas fa-credit-card"></i>
+                                        Otras Tarjetas
+                                    </label>
+                                    <textarea id="additional-cards-input" rows="3" placeholder="Número/Tipo/Notas de tarjetas adicionales" class="form-input"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="coord-card-image-input" class="form-label">
+                                        <i class="fas fa-qrcode"></i>
+                                        Tarjeta de Coordenadas
+                                    </label>
+                                    <input type="file" id="coord-card-image-input" accept="image/*" class="form-input">
+                                    <p id="image-status" class="text-sm text-gray-500 mt-2"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Previsualización -->
+                <section id="print-preview-section">
+                    <div class="flex items-center justify-between mb-6 no-print">
+                        <h2 class="text-2xl font-bold text-gray-700 dark:text-white">Vista Previa del Documento</h2>
+                        <div class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                            <i class="fas fa-eye"></i>
+                            <span>Previsualización en tiempo real</span>
+                        </div>
+                    </div>
+                    <div id="print-sheet-container">
+                        <div id="print-sheet" class="print-sheet mx-auto transition-shadow duration-300">
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+    <script>
+        // === PLANTILLA BASE Y EJEMPLO ===
+        const TEMPLATE_BASE = `Nombre:
+Cédula:
+Banco:
+Cuenta:
+Tipo de cuenta:
+Usuario web:
+Clave web:
+Clave operaciones:
+Incluir tarjeta en acceso: No
+Incluir cédula en acceso: No
+Imagen de seguridad:
+Método alternativo:
+Correo:
+Clave correo:
+Teléfono:
+Tarjeta débito:
+Nombre en tarjeta:
+Vencimiento:
+CVV:
+PIN:
+Otras cuentas:
+Otras tarjetas:
+Pregunta 1:
+Respuesta 1:
+Pregunta 2:
+Respuesta 2:
+Pregunta 3:
+Respuesta 3:
+`;
+        const TEMPLATE_EXAMPLE = `Nombre: ANA MERCEDES RAMIREZ ROJAS
+Cédula: V-15876543
+Banco: 0102
+Cuenta: 01020345000012345678
+Tipo de cuenta: Corriente
+Usuario web: anamercer
+Clave web: ClaveSuperSegura123
+Clave operaciones: ClaveOp123
+Incluir tarjeta en acceso: Sí
+Incluir cédula en acceso: Sí
+Imagen de seguridad: Un tucán volando sobre un puente de madera.
+Método alternativo: Se usa Token Digital en el móvil para acceso secundario.
+Correo: ana.ramirez@ejemplo.com
+Clave correo: ClaveCorreoAna123
+Teléfono: 0412-5555555
+Tarjeta débito: 4532100098765432
+Nombre en tarjeta: A. RAMIREZ ROJAS
+Vencimiento: 12/28
+CVV: 123
+PIN: 789012
+Otras cuentas:
+0105-001122334455667788 (Mercantil) - Luis Mendoza
+0102-998877665544332211 (BDV) - Familia Pérez
+Otras tarjetas:
+Tarjeta Crédito Visa: 4929... Vencimiento 05/26. Límite: $500.
+Pregunta 1: ¿Nombre de tu primera mascota?
+Respuesta 1: Rocky
+Pregunta 2: ¿Ciudad donde naciste?
+Respuesta 2: Maracaibo
+Pregunta 3: ¿Modelo de tu primer carro?
+Respuesta 3: Malibu
+`;
+        // === DATOS Y REFERENCIAS EXISTENTES ===
+        const BANCOS = [
+            { code: '0001', name: 'Banco Central de Venezuela', rif: 'G200001100', slogan: 'Banco Central', color: '#1e40af' },
+            { code: '0102', name: 'Banco de Venezuela', rif: 'G200099976', slogan: 'Tu banco, tu país.', color: '#0d3b66' },
+            { code: '0104', name: 'Banco Venezolano de Crédito', rif: 'J000029709', slogan: 'Innovación y solidez.', color: '#1a365d' },
+            { code: '0105', name: 'Banco Mercantil', rif: 'J000029610', slogan: 'Liderazgo que inspira.', color: '#c53030' },
+            { code: '0108', name: 'BBVA Provincial', rif: 'J000029679', slogan: 'Trabajamos para ti.', color: '#2b6cb0' },
+            { code: '0114', name: 'Bancaribe', rif: 'J000029490', slogan: 'Contigo donde vayas.', color: '#2f855a' },
+            { code: '0115', name: 'Banco Exterior', rif: 'J000029904', slogan: 'Seguridad y Confianza', color: '#2d3748' },
+            { code: '0128', name: 'Banco Caroní', rif: 'J095049551', slogan: 'Nuestro es su futuro', color: '#8c52ff' },
+            { code: '0134', name: 'Banesco', rif: 'J070133805', slogan: 'Todo lo que quieres ser', color: '#dd6b20' },
+            { code: '0137', name: 'Banco Sofitasa', rif: 'J090283846', slogan: 'Tú sabes lo que quieres', color: '#2c5282' },
+            { code: '0138', name: 'Banco Plaza', rif: 'J002970553', slogan: 'Juntos Crecemos', color: '#2b6cb0' },
+            { code: '0146', name: 'BanGente', rif: 'J301442040', slogan: 'Gente para la gente', color: '#38a169' },
+            { code: '0151', name: 'BFC Banco Fondo Común', rif: 'J000723060', slogan: 'Líder en microfinanzas', color: '#2d3748' },
+            { code: '0156', name: '100% Banco', rif: 'J085007768', slogan: 'Pasión por la Banca', color: '#e53e3e' },
+            { code: '0157', name: 'DELSUR Banco Universal', rif: 'J000797224', slogan: 'Tu mejor aliado', color: '#2b6cb0' },
+            { code: '0163', name: 'Banco Del Tesoro', rif: 'G200051876', slogan: 'El Banco de la Nación', color: '#2d3748' },
+            { code: '0166', name: 'Banco Agrícola de Venezuela', rif: 'G200057955', slogan: 'Sembrando futuro', color: '#38a169' },
+            { code: '0168', name: 'Bancrecer', rif: 'J316374173', slogan: 'Crece con nosotros', color: '#2c5282' },
+            { code: '0169', name: 'Mi Banco', rif: 'J315941023', slogan: 'Mi Banco, mi gente', color: '#dd6b20' },
+            { code: '0171', name: 'Banco Activo', rif: 'J080066227', slogan: 'Ponte Activo', color: '#e53e3e' },
+            { code: '0172', name: 'Bancamiga', rif: 'J316287599', slogan: 'La Banca con el futuro', color: '#2b6cb0' },
+            { code: '0173', name: 'Banco Internacional de Desarrollo', rif: 'J294640109', slogan: 'Desarrollo y Progreso', color: '#2d3748' },
+            { code: '0174', name: 'Banplus', rif: 'J000423032', slogan: 'Tu mundo en positivo', color: '#38a169' },
+            { code: '0175', name: 'Banco Digital de los Trabajadores', rif: 'G200091487', slogan: 'Banco Digital', color: '#2c5282' },
+            { code: '0177', name: 'Banfanb', rif: 'G200106573', slogan: 'El Banco de la FANB', color: '#2d3748' },
+            { code: '0191', name: 'Banco Nacional de Crédito (BNC)', rif: 'J309841327', slogan: 'Donde tú te mueves', color: '#dd6b20' },
+            { code: '0601', name: 'Instituto Municipal de Crédito Popular', rif: 'G200068973', slogan: 'Al servicio del pueblo', color: '#2d3748' },
+        ];
+        const EXAMPLE_DATA = {
+            fullName: 'ANA MERCEDES RAMIREZ ROJAS',
+            idNumber: 'V-15876543',
+            accountNumber: '01020345000012345678',
+            accountType: 'Corriente',
+            webUser: 'anamercer',
+            webPassword: 'ClaveSuperSegura123',
+            opPassword: 'ClaveOp123',
+            securityImageDesc: 'Un tucán volando sobre un un puente de madera.',
+            altEntryNotes: 'Se usa Token Digital en el móvil para acceso secundario.',
+            email: 'ana.ramirez@ejemplo.com',
+            emailPassword: 'ClaveCorreoAna123',
+            phoneNumber: '0412-5555555',
+            debitNumber: '4532100098765432',
+            debitName: 'A. RAMIREZ ROJAS', 
+            debitExpiry: '12/28',
+            debitCvc: '123',
+            debitPin: '789012', 
+            thirdPartyAccounts: "0105-001122334455667788 (Mercantil) - Luis Mendoza\n0102-998877665544332211 (BDV) - Familia Pérez",
+            additionalCards: "Tarjeta Crédito Visa: 4929... Vencimiento 05/26. Límite: $500.",
+            securityQuestions: [
+                { q: "¿Nombre de tu primera mascota?", r: "Rocky" },
+                { q: "¿Ciudad donde naciste?", r: "Maracaibo" },
+                { q: "¿Modelo de tu primer carro?", r: "Malibu" },
+            ],
+        };
+        // === REFERENCIAS A ELEMENTOS ===
+        const bankSelector = document.getElementById('bank-selector');
+        const printButton = document.getElementById('print-button');
+        const fillExampleButton = document.getElementById('fill-example-button');
+        const saveDraftButton = document.getElementById('save-draft-button');
+        const clearAllButton = document.getElementById('clear-all-button');
+        const pasteExternalDataButton = document.getElementById('paste-external-data');
+        const showTemplateButton = document.getElementById('show-template-button');
+        const templateModal = document.getElementById('template-modal');
+        const templateTextarea = document.getElementById('template-textarea');
+        const closeTemplateModal = document.getElementById('close-template-modal');
+        const copyTemplateBtn = document.getElementById('copy-template-btn');
+        const fillTemplateExample = document.getElementById('fill-template-example');
+        const clearTemplateBtn = document.getElementById('clear-template-btn');
+        const printSheet = document.getElementById('print-sheet');
+        const coordCardImageInput = document.getElementById('coord-card-image-input');
+        const securityQuestionsContainer = document.getElementById('security-questions-container');
+        const fontSizeSlider = document.getElementById('font-size-slider');
+        const fontSizeValueDisplay = document.getElementById('font-size-value');
+        const bannerSizeSlider = document.getElementById('banner-size-slider');
+        const bannerSizeValueDisplay = document.getElementById('banner-size-value');
+        const coordSizeSlider = document.getElementById('coord-size-slider');
+        const coordSizeValueDisplay = document.getElementById('coord-size-value');
+        const fullNameInput = document.getElementById('full-name-input');
+        const debitNameInput = document.getElementById('debit-name-input');
+        const themeToggle = document.getElementById('theme-toggle');
+        const useBankColorCheckbox = document.getElementById('use-bank-color-checkbox');
+        const idNumberInputMain = document.getElementById('id-number-input-main');
+        const accountNumberInputMain = document.getElementById('account-number-input-main');
+        const accountTypeInputMain = document.getElementById('account-type-input-main');
+        const idNumberInput = document.getElementById('id-number-input');
+        const numQuestionsInput = document.getElementById('num-questions-input');
+        // === NUEVOS ELEMENTOS ===
+        const exportToTemplateButton = document.getElementById('export-to-template-button');
+        const loadFromTemplateButton = document.getElementById('load-from-template-button');
+        // === FIN NUEVOS ELEMENTOS ===
+        let coordCardImageBase64 = null;
+        let currentBankCode = '0102';
+        let bannerSizeFactor = 1.0;
+        let coordSizeFactor = 1.0;
+        let currentSecurityQuestionCount = 3;
+        // === VALIDACIONES ===
+        const validators = {
+            email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+            cardNumber: (v) => /^\d{16}$/.test(v.replace(/\s/g, '')),
+            cvv: (v) => /^\d{3,4}$/.test(v),
+            expiry: (v) => /^(0[1-9]|1[0-2])\/\d{2}$/.test(v),
+            pin: (v) => /^\d{4,6}$/.test(v),
+            id: (v) => /^([VEJPGvejpg]-?\s*\d{5,9})$/.test(v.trim()),
+            phone: (v) => /^[\d\-\s\(\)]{10,}$/.test(v.trim()),
+        };
+        // === FUNCIONES DEL MODAL DE PLANTILLA ===
+        showTemplateButton.addEventListener('click', () => {
+            templateTextarea.value = TEMPLATE_BASE.trim();
+            templateModal.classList.remove('hidden');
+        });
+        closeTemplateModal.addEventListener('click', () => {
+            templateModal.classList.add('hidden');
+        });
+        copyTemplateBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(templateTextarea.value).then(() => {
+                alert('✅ Plantilla copiada al portapapeles.');
+            }).catch(() => {
+                alert('❌ No se pudo copiar. Selecciona y copia manualmente.');
+            });
+        });
+        fillTemplateExample.addEventListener('click', () => {
+            templateTextarea.value = TEMPLATE_EXAMPLE.trim();
+        });
+        clearTemplateBtn.addEventListener('click', () => {
+            templateTextarea.value = TEMPLATE_BASE.trim();
+        });
+        // === FUNCIÓN CORREGIDA: PEGADO DE DATOS EXTERNOS ===
+        const parsePastedData = (text) => {
+            const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l !== '');
+            const data = {};
+            const questions = [];
+            let currentMultilineKey = null;
+            let multilineContent = '';
+            const multiLineKeys = ['Otras cuentas', 'Otras tarjetas'];
+            const booleanKeys = ['Incluir tarjeta en acceso', 'Incluir cédula en acceso'];
+            const mappings = {
+                'Nombre': 'fullName',
+                'Cédula': 'idNumber',
+                'Banco': 'bankCode',
+                'Cuenta': 'accountNumber',
+                'Tipo de cuenta': 'accountType',
+                'Usuario web': 'webUser',
+                'Clave web': 'webPassword',
+                'Clave operaciones': 'opPassword',
+                'Incluir tarjeta en acceso': 'includeCardInAccess',
+                'Incluir cédula en acceso': 'includeIdInAccess',
+                'Imagen de seguridad': 'securityImageDesc',
+                'Método alternativo': 'altEntryNotes',
+                'Correo': 'email',
+                'Clave correo': 'emailPassword',
+                'Teléfono': 'phoneNumber',
+                'Tarjeta débito': 'debitNumber',
+                'Nombre en tarjeta': 'debitName',
+                'Vencimiento': 'debitExpiry',
+                'CVV': 'debitCvc',
+                'PIN': 'debitPin',
+                'Otras cuentas': 'thirdPartyAccounts',
+                'Otras tarjetas': 'additionalCards',
+            };
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                // ✅ Detectar preguntas/respuestas ANTES de cualquier otra lógica
+                if (/^Pregunta \d+:/.test(line) || /^Respuesta \d+:/.test(line)) {
+                    // Cerrar bloque multilínea si existe
+                    if (currentMultilineKey !== null) {
+                        data[mappings[currentMultilineKey]] = multilineContent.trim();
+                        currentMultilineKey = null;
+                        multilineContent = '';
+                    }
+                    // Las preguntas se procesan después → saltar
+                    continue;
+                }
+                const match = line.match(/^([^:]+):\s*(.*)$/);
+                if (match) {
+                    const key = match[1].trim();
+                    const value = match[2] || '';
+                    // Cerrar bloque multilínea si la clave está en mappings
+                    if (key in mappings) {
+                        if (currentMultilineKey !== null) {
+                            data[mappings[currentMultilineKey]] = multilineContent.trim();
+                            currentMultilineKey = null;
+                            multilineContent = '';
+                        }
+                        if (booleanKeys.includes(key)) {
+                            data[mappings[key]] = value.toLowerCase().startsWith('s') || value === 'Sí' || value === 'Si';
+                        } else if (multiLineKeys.includes(key)) {
+                            currentMultilineKey = key;
+                            multilineContent = value;
+                        } else {
+                            data[mappings[key]] = value;
+                        }
+                    } else {
+                        // Clave no reconocida → tratar como contenido multilínea si hay bloque activo
+                        if (currentMultilineKey !== null) {
+                            if (multilineContent !== '') multilineContent += '\n';
+                            multilineContent += line;
+                        }
+                    }
+                } else {
+                    // Línea sin ":" → contenido multilínea
+                    if (currentMultilineKey !== null) {
+                        if (multilineContent !== '') multilineContent += '\n';
+                        multilineContent += line;
+                    }
+                }
+            }
+            // Cerrar último bloque multilínea
+            if (currentMultilineKey !== null) {
+                data[mappings[currentMultilineKey]] = multilineContent.trim();
+            }
+            // ✅ Extraer preguntas y respuestas (sin cambios)
+            let qIndex = 1;
+            while (true) {
+                const qLine = lines.find(l => l.startsWith(`Pregunta ${qIndex}:`));
+                const rLine = lines.find(l => l.startsWith(`Respuesta ${qIndex}:`));
+                if (!qLine && !rLine) break;
+                const q = qLine ? qLine.replace(`Pregunta ${qIndex}:`, '').trim() : '';
+                const r = rLine ? rLine.replace(`Respuesta ${qIndex}:`, '').trim() : '';
+                if (q || r) {
+                    questions.push({ q, r });
+                }
+                qIndex++;
+            }
+            data.securityQuestions = questions;
+            return data;
+        };
+        const fillFormFromParsedData = (data) => {
+            if (data.fullName) fullNameInput.value = data.fullName.toUpperCase();
+            if (data.idNumber) {
+                idNumberInputMain.value = data.idNumber;
+                idNumberInput.value = data.idNumber;
+                manualContactIdEdit = true;
+            }
+            if (data.accountNumber) accountNumberInputMain.value = data.accountNumber;
+            if (data.accountType) accountTypeInputMain.value = data.accountType;
+            if (data.webUser) document.getElementById('web-user-input').value = data.webUser;
+            if (data.webPassword) document.getElementById('web-password-input').value = data.webPassword;
+            if (data.opPassword) document.getElementById('op-password-input').value = data.opPassword;
+            if (data.includeCardInAccess !== undefined) document.getElementById('include-card-in-access').checked = data.includeCardInAccess;
+            if (data.includeIdInAccess !== undefined) document.getElementById('include-id-in-access').checked = data.includeIdInAccess;
+            if (data.securityImageDesc) document.getElementById('security-image-desc-input').value = data.securityImageDesc;
+            if (data.altEntryNotes) document.getElementById('alt-entry-notes-input').value = data.altEntryNotes;
+            if (data.email) document.getElementById('email-input').value = data.email;
+            if (data.emailPassword) document.getElementById('email-password-input').value = data.emailPassword;
+            if (data.phoneNumber) document.getElementById('phone-number-input').value = data.phoneNumber;
+            if (data.debitNumber) document.getElementById('debit-number-input').value = data.debitNumber;
+            if (data.debitName) debitNameInput.value = data.debitName;
+            if (data.debitExpiry) document.getElementById('debit-expiry-input').value = data.debitExpiry;
+            if (data.debitCvc) document.getElementById('debit-cvc-input').value = data.debitCvc;
+            if (data.debitPin) document.getElementById('debit-pin-input').value = data.debitPin;
+            // CORREGIDO: Asegurar que "Otras cuentas" y "Otras tarjetas" se llenen correctamente
+            if (data.thirdPartyAccounts) {
+                document.getElementById('third-party-accounts-input').value = data.thirdPartyAccounts;
+            }
+            if (data.additionalCards) {
+                document.getElementById('additional-cards-input').value = data.additionalCards;
+            }
+            if (data.bankCode && BANCOS.some(b => b.code === data.bankCode)) {
+                bankSelector.value = data.bankCode;
+                currentBankCode = data.bankCode;
+            }
+            if (data.securityQuestions && data.securityQuestions.length > 0) {
+                const count = Math.min(8, Math.max(1, data.securityQuestions.length));
+                numQuestionsInput.value = count;
+                currentSecurityQuestionCount = count;
+                createSecurityQuestionFields(count);
+                data.securityQuestions.slice(0, count).forEach((item, idx) => {
+                    const i = idx + 1;
+                    if (document.getElementById(`sec-q-${i}`)) {
+                        document.getElementById(`sec-q-${i}`).value = item.q;
+                        document.getElementById(`sec-r-${i}`).value = item.r;
+                    }
+                });
+            }
+            updatePrintPreview(currentBankCode);
+        };
+        const handlePasteExternalData = async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (!text.trim()) {
+                    alert('No hay texto en el portapapeles.');
+                    return;
+                }
+                const parsed = parsePastedData(text);
+                if (Object.keys(parsed).length === 0 && (!parsed.securityQuestions || parsed.securityQuestions.length === 0)) {
+                    alert('No se encontraron datos reconocibles.\nUse el formato de la "Plantilla para Cliente".');
+                    return;
+                }
+                const preview = `Nombre: ${parsed.fullName || '---'}\nCédula: ${parsed.idNumber || '---'}\nBanco: ${parsed.bankCode || '---'}\n...`;
+                if (confirm(`¿Rellenar formulario con estos datos?\n${preview}\n(Verás más en el formulario)`)) {
+                    fillFormFromParsedData(parsed);
+                }
+            } catch (err) {
+                console.error('Error al leer portapapeles:', err);
+                alert('No se pudo acceder al portapapeles.\n✅ Asegúrate de:\n- Usar Chrome, Edge o Firefox reciente\n- Abrir el archivo localmente (file://)\n- Permitir acceso si aparece un permiso');
+            }
+        };
+        // === NUEVAS FUNCIONES ===
+        const exportToTemplate = () => {
+            const data = getCurrentFormData();
+            const bank = findBank(currentBankCode);
+            
+            let content = `Nombre: ${data.fullName || ''}\nCédula: ${data.idNumberMain || ''}\nBanco: ${currentBankCode || ''}\nCuenta: ${data.accountNumber || ''}\nTipo de cuenta: ${data.accountType || ''}\nUsuario web: ${data.webUser || ''}\nClave web: ${data.webPassword || ''}\nClave operaciones: ${data.opPassword || ''}\nIncluir tarjeta en acceso: ${data.includeCardInAccess ? 'Sí' : 'No'}\nIncluir cédula en acceso: ${data.includeIdInAccess ? 'Sí' : 'No'}\nImagen de seguridad: ${data.securityImageDesc || ''}\nMétodo alternativo: ${data.altEntryNotes || ''}\nCorreo: ${data.email || ''}\nClave correo: ${data.emailPassword || ''}\nTeléfono: ${data.phoneNumber || ''}\nTarjeta débito: ${data.debitNumber || ''}\nNombre en tarjeta: ${data.debitName || ''}\nVencimiento: ${data.debitExpiry || ''}\nCVV: ${data.debitCvc || ''}\nPIN: ${data.debitPin || ''}\nOtras cuentas:\n${data.thirdPartyAccounts || ''}\nOtras tarjetas:\n${data.additionalCards || ''}\n`;
+
+            for (let i = 0; i < data.securityQuestions.length; i++) {
+                const { q, r } = data.securityQuestions[i];
+                content += `Pregunta ${i + 1}: ${q || ''}\nRespuesta ${i + 1}: ${r || ''}\n`;
+            }
+
+            let fileName = 'Documento_Seguridad';
+            if (data.fullName) {
+                const cleanName = data.fullName.replace(/[^a-zA-Z0-9ÁÉÍÓÚáéíóúÑñ\s]/g, '').trim();
+                fileName = cleanName.replace(/\s+/g, '_');
+            }
+            if (data.idNumberMain) fileName += `_${data.idNumberMain}`;
+            if (bank) fileName += `_${bank.code}`;
+            fileName += '.txt';
+
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
+
+        const loadFromTemplate = () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.txt';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const text = ev.target.result;
+                    const parsed = parsePastedData(text);
+                    if (Object.keys(parsed).length === 0 && (!parsed.securityQuestions || parsed.securityQuestions.length === 0)) {
+                        alert('El archivo no contiene datos reconocibles.');
+                        return;
+                    }
+                    if (confirm('¿Cargar los datos desde este archivo de plantilla?')) {
+                        fillFormFromParsedData(parsed);
+                    }
+                };
+                reader.onerror = () => {
+                    alert('Error al leer el archivo.');
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        };
+        // === FIN NUEVAS FUNCIONES ===
+        // === FUNCIONES EXISTENTES (resumidas) ===
+        const findBank = (code) => BANCOS.find(b => b.code === code);
+        const populateBankSelector = () => {
+            bankSelector.innerHTML = '';
+            BANCOS.forEach(bank => {
+                const option = document.createElement('option');
+                option.value = bank.code;
+                option.textContent = `${bank.code} - ${bank.name}`;
+                bankSelector.appendChild(option);
+            });
+            bankSelector.value = currentBankCode;
+        };
+        const createSecurityQuestionFields = (count) => {
+            securityQuestionsContainer.innerHTML = '';
+            for (let i = 1; i <= count; i++) {
+                const div = document.createElement('div');
+                div.className = 'security-question-compact';
+                div.innerHTML = `
+                    <div class="security-question-row">
+                        <div class="form-group">
+                            <label for="sec-q-${i}" class="security-question-label">
+                                <i class="fas fa-question"></i>
+                                Pregunta ${i}
+                            </label>
+                            <input type="text" id="sec-q-${i}" placeholder="Pregunta de seguridad" class="security-question-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="sec-r-${i}" class="security-question-label">
+                                <i class="fas fa-key"></i>
+                                Respuesta ${i}
+                            </label>
+                            <input type="text" id="sec-r-${i}" placeholder="Respuesta" class="security-question-input">
+                        </div>
+                    </div>
+                `;
+                securityQuestionsContainer.appendChild(div);
+            }
+        };
+        const validateField = (input, validatorFn) => {
+            const value = input.value.trim();
+            const group = input.closest('.form-group');
+            if (group) {
+                group.classList.remove('valid', 'invalid');
+                if (value === '') return;
+                if (validatorFn && validatorFn(value)) {
+                    group.classList.add('valid');
+                } else {
+                    group.classList.add('invalid');
+                }
+            }
+        };
+        let manualContactIdEdit = false;
+        idNumberInput.addEventListener('focus', () => { manualContactIdEdit = true; });
+        idNumberInputMain.addEventListener('input', () => {
+            if (!manualContactIdEdit) {
+                idNumberInput.value = idNumberInputMain.value;
+            }
+        });
+        idNumberInput.addEventListener('input', () => { manualContactIdEdit = true; });
+        numQuestionsInput.addEventListener('change', () => {
+            let val = parseInt(numQuestionsInput.value);
+            if (isNaN(val) || val < 1) val = 1;
+            if (val > 8) val = 8;
+            numQuestionsInput.value = val;
+            currentSecurityQuestionCount = val;
+            createSecurityQuestionFields(val);
+            updatePrintPreview(currentBankCode);
+        });
+        const getCurrentFormData = () => {
+            const data = {
+                fullName: fullNameInput.value.trim().toUpperCase(),
+                idNumberMain: idNumberInputMain.value,
+                idNumberContact: idNumberInput.value,
+                accountNumber: accountNumberInputMain.value,
+                accountType: accountTypeInputMain.value,
+                webUser: document.getElementById('web-user-input').value,
+                webPassword: document.getElementById('web-password-input').value,
+                opPassword: document.getElementById('op-password-input').value,
+                includeCardInAccess: document.getElementById('include-card-in-access').checked,
+                includeIdInAccess: document.getElementById('include-id-in-access').checked,
+                includeSecurityImage: document.getElementById('include-security-image').checked,
+                includeAltEntry: document.getElementById('include-alt-entry').checked,
+                includeOpPassword: document.getElementById('include-op-password').checked,
+                securityImageDesc: document.getElementById('security-image-desc-input').value,
+                altEntryNotes: document.getElementById('alt-entry-notes-input').value,
+                email: document.getElementById('email-input').value,
+                emailPassword: document.getElementById('email-password-input').value,
+                phoneNumber: document.getElementById('phone-number-input').value,
+                debitNumber: document.getElementById('debit-number-input').value.replace(/\s/g, ''),
+                debitName: debitNameInput.value.trim().toUpperCase(),
+                debitExpiry: document.getElementById('debit-expiry-input').value,
+                debitCvc: document.getElementById('debit-cvc-input').value,
+                debitPin: document.getElementById('debit-pin-input').value,
+                thirdPartyAccounts: document.getElementById('third-party-accounts-input').value,
+                additionalCards: document.getElementById('additional-cards-input').value,
+                securityQuestions: [],
+                coordCardImageBase64: coordCardImageBase64,
+            };
+            if (data.debitName === '' && data.fullName !== '') data.debitName = data.fullName;
+            data.formattedDebitNumber = data.debitNumber.replace(/(\d{4})/g, '$1 ').trim();
+            for (let i = 1; i <= currentSecurityQuestionCount; i++) {
+                const q = document.getElementById(`sec-q-${i}`)?.value || '';
+                const r = document.getElementById(`sec-r-${i}`)?.value || '';
+                if (q || r) data.securityQuestions.push({ q, r });
+            }
+            return data;
+        };
+        const updatePrintPreview = (bankCode) => {
+            const bank = findBank(bankCode);
+            const data = getCurrentFormData();
+            const now = new Date();
+            if (!bank) {
+                printSheet.innerHTML = `<div class="text-center py-20 text-gray-500">Error: Banco no encontrado.</div>`;
+                return;
+            }
+            const useBankColor = useBankColorCheckbox?.checked || false;
+            const primaryColor = useBankColor && bank.color ? bank.color : '#1e40af';
+            document.documentElement.style.setProperty('--print-primary-color', primaryColor);
+            const fontSizeRem = parseFloat(fontSizeSlider.value);
+            printSheet.style.setProperty('--print-font-size', `${fontSizeRem}rem`);
+            bannerSizeFactor = parseFloat(bannerSizeSlider.value);
+            const baseWidth = 200;
+            const baseHeight = 60;
+            const currentWidth = Math.round(baseWidth * bannerSizeFactor);
+            const currentHeight = Math.round(baseHeight * bannerSizeFactor);
+            coordSizeFactor = parseFloat(coordSizeSlider.value);
+            const baseCoordHeightInInches = 2;
+            const currentCoordMaxHeight = (baseCoordHeightInInches * coordSizeFactor).toFixed(2);
+            const bankLogoPath = `./banner/${bank.code}.png`;
+            const qrText = `Banco: ${bank.name} (${bankCode})\nCuenta: ${data.accountNumber}\nTitular: ${data.fullName}\nCédula: ${data.idNumberMain}\nTeléfono: ${data.phoneNumber}`;
+            const debitCardVisualHtml = `
+                <div class="debit-card-visual">
+                    <div class="flex justify-between items-start">
+                        <div class="debit-card-chip"></div>
+                        <div class="debit-card-logo">${bank.code}</div>
+                    </div>
+                    <div class="debit-card-number">${data.formattedDebitNumber || 'XXXX XXXX XXXX XXXX'}</div>
+                    <div class="debit-card-footer">
+                        <div>
+                            <div class="text-[0.55rem] uppercase text-gray-300">Nombre del Titular</div>
+                            <div class="text-xs font-bold uppercase">${data.debitName || 'NOMBRE NO REGISTRADO'}</div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="text-right">
+                                <div class="text-[0.55rem] uppercase text-gray-300">Vence</div>
+                                <div class="debit-card-expiry">${data.debitExpiry || 'MM/AA'}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[0.55rem] uppercase text-gray-300">CVV/CVC</div>
+                                <div class="debit-card-expiry">${data.debitCvc || '---'}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            let securityQsHtml = data.securityQuestions.map((item, index) => `
+                <div class="security-q-row">
+                    <span class="font-bold text-gray-700">P${index + 1}: ${item.q || '???'}:</span>
+                    <span class="password-value">${item.r || '---'}</span>
+                </div>
+            `).join('');
+            if (!securityQsHtml) securityQsHtml = `<p class="italic text-gray-500">No hay preguntas de seguridad registradas.</p>`;
+            const securityQuestionsBlock = `<div><div class="print-section-header">PREGUNTAS DE SEGURIDAD</div><div class="security-q-grid">${securityQsHtml}</div></div>`;
+            const thirdPartyHtml = data.thirdPartyAccounts ?
+            `<pre class="data-value bg-gray-50 p-1 rounded border border-gray-200 text-xs mt-1 additional-notes-pre">${data.thirdPartyAccounts}</pre>` : `<p class="italic text-gray-500 mt-1">No hay cuentas adicionales registradas.</p>`;
+            const additionalCardsHtml = data.additionalCards ? `<pre class="data-value bg-gray-50 p-1 rounded border border-gray-200 text-xs mt-1 additional-notes-pre">${data.additionalCards}</pre>` : `<p class="italic text-gray-500 mt-1">No hay tarjetas adicionales registradas.</p>`;
+            const coordCardHtml = data.coordCardImageBase64 ?
+            `<img src="${data.coordCardImageBase64}" class="coord-card-img" style="max-height: ${currentCoordMaxHeight}in;" alt="Tarjeta de Coordenadas">` : `<p class="italic text-red-700 font-medium text-center border p-2 bg-red-50">IMAGEN DE COORDENADAS NO CARGADA</p>`;
+            printSheet.innerHTML = `
+                <header class="text-center border-b-4 border-red-700">
+                    <div class="flex items-center justify-center mb-1 relative w-full"> 
+                        <img src="${bankLogoPath}" style="width: ${currentWidth}px; height: ${currentHeight}px; object-fit: contain;" 
+                             onerror="this.onerror=null; this.src='https://placehold.co/${currentWidth}x${currentHeight}/333333/ffffff?text=${bank.code}+BANNER';"
+                             alt="Logo del Banco">
+                        <p class="text-sm text-gray-600 font-medium absolute right-0 top-1/2 transform -translate-y-1/2">RIF: ${bank.rif}</p>
+                    </div>
+                    <h2 class="text-sm font-bold text-red-700 mt-1">DOCUMENTO PRIVADO - ${data.fullName || '---'} - ${data.idNumberMain || '---'} 
+                </header>
+                <div class="grid grid-cols-2 gap-x-6"> <div class="space-y-3">
+                    <div>
+                        <div class="print-section-header">DATOS DE ACCESO PRINCIPAL</div>
+                        ${data.includeIdInAccess ? `<div class="data-row"><span class="data-label">Cédula/ID:</span><span class="data-value">${data.idNumberMain || '---'}</span></div>` : ''}
+                        <div class="data-row"><span class="data-label">Usuario Web:</span><span class="data-value password-value">${data.webUser || '---'}</span></div>
+                        <div class="data-row"><span class="data-label">Clave Web:</span><span class="data-value password-value">${data.webPassword || '---'}</span></div>
+                        ${data.includeOpPassword ? `<div class="data-row"><span class="data-label">Clave Especial:</span><span class="data-value password-value">${data.opPassword || '---'}</span></div>` : ''}
+                        ${data.includeCardInAccess ? `<div class="data-row"><span class="data-label">Tarjeta Principal:</span><span class="data-value password-value">${data.debitNumber || '---'}</span></div>` : ''}
+                        ${data.includeSecurityImage ? `<div class="data-row"><span class="data-label">Imagen Seguridad:</span><span class="data-value italic">${data.securityImageDesc || '---'}</span></div>` : ''}
+                        ${data.includeAltEntry ? `<div class="data-row"><span class="data-label">Método Alternativo:</span><span class="data-value italic">${data.altEntryNotes || '---'}</span></div>` : ''}
+                    </div>
+                    <div>
+                        <div class="print-section-header">CONTACTO Y PAGO MÓVIL</div>
+                        <div class="data-row"><span class="data-label">Titular:</span><span class="data-value">${data.fullName || '---'}</span></div>
+                        <div class="data-row"><span class="data-label">Banco:</span><span class="data-value">${bank.name}</span></div>
+                        <div class="data-row"><span class="data-label">Tipo de Cuenta:</span><span class="data-value">${data.accountType || '---'}</span></div>
+                        <div class="data-row"><span class="data-label">No. Cuenta:</span><span class="data-value font-mono font-bold text-blue-800">${data.accountNumber || '---'}</span></div>
+                        <div class="data-row"><span class="data-label">Cédula:</span><span class="data-value">${data.idNumberContact || '---'}</span></div>
+                        <div class="data-row"><span class="data-label">Teléfono:</span><span class="data-value">${data.phoneNumber || '---'}</span></div>
+                        <div class="data-row"><span class="data-label">Correo:</span><span class="data-value">${data.email || '---'}</span></div>
+                        <div class="data-row"><span class="data-label">Clave de Correo:</span><span class="data-value password-value">${data.emailPassword || '---'}</span></div>
+                    </div>
+                    ${securityQuestionsBlock}
+                </div>
+                <div class="space-y-3">
+                    <div>
+                        <div class="print-section-header">TARJETA DE DÉBITO PRINCIPAL</div>
+                        ${debitCardVisualHtml}
+                        <div class="flex justify-start items-center text-sm mt-1">
+                            <div class="flex items-center">
+                                <span class="data-label w-auto font-normal text-gray-700 mr-2">PIN:</span>
+                                <span class="password-value text-base">${data.debitPin || '---'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="print-section-header">NOTAS ADICIONALES</div>
+                        <p class="font-semibold text-gray-700 text-sm mt-2 mb-1">Otras Cuentas:</p>
+                        ${thirdPartyHtml}
+                        <p class="font-semibold text-gray-700 text-sm mt-3 mb-1">Otras Tarjetas:</p>
+                        ${additionalCardsHtml}
+                    </div>
+                    <div>
+                        <div class="print-section-header border-b-0 mt-3">TARJETA DE COORDENADAS (IMAGEN)</div>
+                        ${coordCardHtml}
+                    </div>
+                </div>
+                </div>
+                <div class="print-footer pt-3 border-t-2 border-dashed border-gray-300 mt-4">
+                    <div class="flex justify-between items-end text-xs text-gray-500">
+                        <span>Metadatos | Generado: ${now.toLocaleDateString('es-VE')} - ${now.toLocaleTimeString('es-VE')}</span>
+                        <canvas id="qr-canvas" class="w-[50px] h-[50px] flex-shrink-0"></canvas>
+                    </div>
+                    <p class="text-[0.6rem] text-center text-red-700 font-bold mt-1 w-full" style="word-wrap: break-word;">
+                        ADVERTENCIA: ESTE DOCUMENTO CONTIENE INFORMACIÓN ALTAMENTE SENSIBLE Y CONFIDENCIAL. CREADO EN UN ENTORNO DE PRUEBA NO CONECTADO A NINGÚN BANCO REAL.
+                    </p>
+                </div>
+            `;
+            const qrCanvas = document.getElementById('qr-canvas');
+            if (qrCanvas) {
+                try {
+                    const qr = qrcode(0, 'L');
+                    qr.addData(qrText);
+                    qr.make();
+                    const cellsize = 2;
+                    const margin = 2;
+                    const canvasSize = qr.getModuleCount() * cellsize + 2 * margin;
+                    qrCanvas.width = canvasSize;
+                    qrCanvas.height = canvasSize;
+                    const ctx = qrCanvas.getContext('2d');
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, canvasSize, canvasSize);
+                    for (let row = 0; row < qr.getModuleCount(); row++) {
+                        for (let col = 0; col < qr.getModuleCount(); col++) {
+                            if (qr.isDark(row, col)) {
+                                ctx.fillStyle = '#000000';
+                                ctx.fillRect(margin + col * cellsize, margin + row * cellsize, cellsize, cellsize);
+                            }
+                        }
+                    }
+                    qrCanvas.style.width = '50px';
+                    qrCanvas.style.height = '50px';
+                } catch (e) {
+                    console.error("Error al generar QR:", e);
+                }
+            }
+        };
+        // === FUNCIONES EXISTENTES: fillExampleData, handleImageUpload, saveDraft, loadDraft, clearAll, toggleTheme, initializeApp ===
+        const fillExampleData = () => {
+            fullNameInput.value = EXAMPLE_DATA.fullName;
+            idNumberInputMain.value = EXAMPLE_DATA.idNumber;
+            accountNumberInputMain.value = EXAMPLE_DATA.accountNumber;
+            accountTypeInputMain.value = EXAMPLE_DATA.accountType;
+            document.getElementById('web-user-input').value = EXAMPLE_DATA.webUser;
+            document.getElementById('web-password-input').value = EXAMPLE_DATA.webPassword;
+            document.getElementById('op-password-input').value = EXAMPLE_DATA.opPassword;
+            document.getElementById('include-card-in-access').checked = true;
+            document.getElementById('include-id-in-access').checked = true;
+            document.getElementById('include-security-image').checked = true;
+            document.getElementById('include-alt-entry').checked = true;
+            document.getElementById('include-op-password').checked = true;
+            document.getElementById('security-image-desc-input').value = EXAMPLE_DATA.securityImageDesc;
+            document.getElementById('alt-entry-notes-input').value = EXAMPLE_DATA.altEntryNotes;
+            document.getElementById('email-input').value = EXAMPLE_DATA.email;
+            document.getElementById('email-password-input').value = EXAMPLE_DATA.emailPassword;
+            document.getElementById('phone-number-input').value = EXAMPLE_DATA.phoneNumber;
+            idNumberInput.value = EXAMPLE_DATA.idNumber;
+            document.getElementById('debit-number-input').value = EXAMPLE_DATA.debitNumber;
+            debitNameInput.value = EXAMPLE_DATA.debitName;
+            document.getElementById('debit-expiry-input').value = EXAMPLE_DATA.debitExpiry;
+            document.getElementById('debit-cvc-input').value = EXAMPLE_DATA.debitCvc;
+            document.getElementById('debit-pin-input').value = EXAMPLE_DATA.debitPin;
+            document.getElementById('third-party-accounts-input').value = EXAMPLE_DATA.thirdPartyAccounts;
+            document.getElementById('additional-cards-input').value = EXAMPLE_DATA.additionalCards;
+            currentSecurityQuestionCount = EXAMPLE_DATA.securityQuestions.length;
+            numQuestionsInput.value = currentSecurityQuestionCount;
+            createSecurityQuestionFields(currentSecurityQuestionCount);
+            EXAMPLE_DATA.securityQuestions.forEach((item, index) => {
+                const i = index + 1;
+                if (document.getElementById(`sec-q-${i}`)) {
+                    document.getElementById(`sec-q-${i}`).value = item.q;
+                    document.getElementById(`sec-r-${i}`).value = item.r;
+                }
+            });
+            coordCardImageBase64 = null;
+            document.getElementById('image-status').textContent = 'Se cargaron datos de ejemplo. Suba la imagen de la Tarjeta de Coordenadas manualmente.';
+            document.getElementById('image-status').classList.remove('text-green-600');
+            document.getElementById('image-status').classList.add('text-red-600');
+            updatePrintPreview(currentBankCode);
+        };
+        const handleImageUpload = (event) => {
+            const file = event.target.files[0];
+            const statusElement = document.getElementById('image-status');
+            coordCardImageBase64 = null;
+            if (file && file.type.match('image.*')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    coordCardImageBase64 = e.target.result;
+                    statusElement.textContent = `Imagen "${file.name}" cargada correctamente para impresión.`;
+                    statusElement.classList.remove('text-red-600');
+                    statusElement.classList.add('text-green-600');
+                    updatePrintPreview(currentBankCode);
+                };
+                reader.onerror = () => {
+                    statusElement.textContent = 'Error al leer la imagen.';
+                    statusElement.classList.remove('text-green-600');
+                    statusElement.classList.add('text-red-600');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                statusElement.textContent = 'Seleccione un archivo de imagen válido.';
+                statusElement.classList.remove('text-green-600');
+                statusElement.classList.add('text-red-600');
+                updatePrintPreview(currentBankCode);
+            }
+        };
+        const saveDraft = () => {
+            const data = getCurrentFormData();
+            const draft = {
+                ...data,
+                currentBankCode,
+                bannerSizeFactor,
+                coordSizeFactor,
+                fontSize: fontSizeSlider.value,
+                useBankColor: useBankColorCheckbox?.checked || false,
+                securityQuestionCount: currentSecurityQuestionCount,
+                includeIdInAccess: document.getElementById('include-id-in-access').checked,
+                includeSecurityImage: document.getElementById('include-security-image').checked,
+                includeAltEntry: document.getElementById('include-alt-entry').checked,
+                includeOpPassword: document.getElementById('include-op-password').checked,
+            };
+            localStorage.setItem('bankSecurityDraft', JSON.stringify(draft));
+            alert('Borrador guardado exitosamente.');
+        };
+        const loadDraft = () => {
+            const saved = localStorage.getItem('bankSecurityDraft');
+            if (saved) {
+                const draft = JSON.parse(saved);
+                fullNameInput.value = draft.fullName || '';
+                idNumberInputMain.value = draft.idNumberMain || draft.idNumber || '';
+                accountNumberInputMain.value = draft.accountNumber || '';
+                accountTypeInputMain.value = draft.accountType || 'Corriente';
+                document.getElementById('web-user-input').value = draft.webUser || '';
+                document.getElementById('web-password-input').value = draft.webPassword || '';
+                document.getElementById('op-password-input').value = draft.opPassword || '';
+                document.getElementById('include-card-in-access').checked = draft.includeCardInAccess || false;
+                document.getElementById('include-id-in-access').checked = draft.includeIdInAccess || false;
+                document.getElementById('include-security-image').checked = draft.includeSecurityImage !== undefined ? draft.includeSecurityImage : true;
+                document.getElementById('include-alt-entry').checked = draft.includeAltEntry !== undefined ? draft.includeAltEntry : true;
+                document.getElementById('include-op-password').checked = draft.includeOpPassword !== undefined ? draft.includeOpPassword : true;
+                document.getElementById('security-image-desc-input').value = draft.securityImageDesc || '';
+                document.getElementById('alt-entry-notes-input').value = draft.altEntryNotes || '';
+                document.getElementById('email-input').value = draft.email || '';
+                document.getElementById('email-password-input').value = draft.emailPassword || '';
+                document.getElementById('phone-number-input').value = draft.phoneNumber || '';
+                idNumberInput.value = draft.idNumberContact || draft.idNumber || '';
+                document.getElementById('debit-number-input').value = draft.debitNumber || '';
+                debitNameInput.value = draft.debitName || '';
+                document.getElementById('debit-expiry-input').value = draft.debitExpiry || '';
+                document.getElementById('debit-cvc-input').value = draft.debitCvc || '';
+                document.getElementById('debit-pin-input').value = draft.debitPin || '';
+                document.getElementById('third-party-accounts-input').value = draft.thirdPartyAccounts || '';
+                document.getElementById('additional-cards-input').value = draft.additionalCards || '';
+                coordCardImageBase64 = draft.coordCardImageBase64 || null;
+                document.getElementById('image-status').textContent = coordCardImageBase64 ? 'Imagen cargada desde borrador.' : 'No hay imagen en el borrador.';
+                document.getElementById('image-status').className = 'text-sm ' + (coordCardImageBase64 ? 'text-green-600' : 'text-gray-500');
+                currentBankCode = draft.currentBankCode || '0102';
+                bannerSizeFactor = draft.bannerSizeFactor || 1.0;
+                coordSizeFactor = draft.coordSizeFactor || 1.0;
+                fontSizeSlider.value = draft.fontSize || '0.8';
+                fontSizeValueDisplay.textContent = `${parseFloat(fontSizeSlider.value).toFixed(2)}rem`;
+                bannerSizeSlider.value = bannerSizeFactor;
+                bannerSizeValueDisplay.textContent = `${bannerSizeFactor.toFixed(1)}x`;
+                coordSizeSlider.value = coordSizeFactor;
+                coordSizeValueDisplay.textContent = `${coordSizeFactor.toFixed(1)}x`;
+                if (useBankColorCheckbox) useBankColorCheckbox.checked = draft.useBankColor || false;
+                currentSecurityQuestionCount = draft.securityQuestionCount || 3;
+                if (currentSecurityQuestionCount < 1) currentSecurityQuestionCount = 1;
+                if (currentSecurityQuestionCount > 8) currentSecurityQuestionCount = 8;
+                numQuestionsInput.value = currentSecurityQuestionCount;
+                createSecurityQuestionFields(currentSecurityQuestionCount);
+                bankSelector.value = currentBankCode;
+                if (draft.securityQuestions && Array.isArray(draft.securityQuestions)) {
+                    draft.securityQuestions.forEach((item, index) => {
+                        const i = index + 1;
+                        if (i <= currentSecurityQuestionCount && document.getElementById(`sec-q-${i}`)) {
+                            document.getElementById(`sec-q-${i}`).value = item.q || '';
+                            document.getElementById(`sec-r-${i}`).value = item.r || '';
+                        }
+                    });
+                }
+                updatePrintPreview(currentBankCode);
+            }
+        };
+        const clearAll = () => {
+            if (confirm('¿Está seguro de eliminar todos los datos?')) {
+                localStorage.removeItem('bankSecurityDraft');
+                document.querySelectorAll('input, textarea, select').forEach(el => {
+                    if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
+                    else el.value = '';
+                });
+                // Restablecer checkboxes a valores por defecto
+                document.getElementById('include-card-in-access').checked = true;
+                document.getElementById('include-id-in-access').checked = true;
+                document.getElementById('include-security-image').checked = true;
+                document.getElementById('include-alt-entry').checked = true;
+                document.getElementById('include-op-password').checked = true;
+                document.getElementById('use-bank-color-checkbox').checked = true;
+                coordCardImageBase64 = null;
+                currentBankCode = '0102';
+                bannerSizeFactor = 1.0;
+                coordSizeFactor = 1.0;
+                currentSecurityQuestionCount = 3;
+                fontSizeSlider.value = '0.8';
+                bannerSizeSlider.value = '1.0';
+                coordSizeSlider.value = '1.0';
+                numQuestionsInput.value = '3';
+                fontSizeValueDisplay.textContent = '0.80rem';
+                bannerSizeValueDisplay.textContent = '1.0x';
+                coordSizeValueDisplay.textContent = '1.0x';
+                bankSelector.value = currentBankCode;
+                document.querySelectorAll('.form-group').forEach(group => group.classList.remove('valid', 'invalid'));
+                document.getElementById('image-status').textContent = '';
+                document.getElementById('image-status').className = 'text-sm text-gray-500';
+                createSecurityQuestionFields(3);
+                updatePrintPreview(currentBankCode);
+            }
+        };
+        const toggleTheme = () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            themeToggle.innerHTML = isDark ? '<i class="fas fa-sun text-yellow-400"></i>' : '<i class="fas fa-moon text-gray-700"></i>';
+        };
+        const initializeApp = () => {
+            const savedTheme = localStorage.getItem('darkMode') === 'true';
+            if (savedTheme) {
+                document.body.classList.add('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-sun text-yellow-400"></i>';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon text-gray-700"></i>';
+            }
+            createSecurityQuestionFields(currentSecurityQuestionCount);
+            populateBankSelector();
+            bankSelector.value = currentBankCode;
+            coordCardImageInput.addEventListener('change', handleImageUpload);
+            themeToggle.addEventListener('click', toggleTheme);
+            loadDraft();
+            const validationFields = [
+                { id: 'email-input', validator: validators.email },
+                { id: 'debit-number-input', validator: validators.cardNumber },
+                { id: 'debit-cvc-input', validator: validators.cvv },
+                { id: 'debit-expiry-input', validator: validators.expiry },
+                { id: 'debit-pin-input', validator: validators.pin },
+                { id: 'id-number-input-main', validator: validators.id },
+                { id: 'phone-number-input', validator: validators.phone },
+            ];
+            validationFields.forEach(({ id, validator }) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', () => validateField(el, validator));
+                    if (id === 'debit-number-input') {
+                        el.addEventListener('input', () => {
+                            let value = el.value.replace(/\D/g, '').substring(0, 16);
+                            value = value.replace(/(\d{4})/g, '$1 ').trim();
+                            el.value = value;
+                        });
+                    } else if (id === 'debit-expiry-input') {
+                        el.addEventListener('input', () => {
+                            let v = el.value.replace(/\D/g, '');
+                            if (v.length >= 2) v = v.substring(0, 2) + '/' + v.substring(2, 4);
+                            el.value = v;
+                        });
+                    }
+                }
+            });
+            const formInputs = document.querySelectorAll('input, select, textarea');
+            formInputs.forEach(input => {
+                if (input.type !== 'file' && 
+                    input.id !== 'font-size-slider' && 
+                    input.id !== 'banner-size-slider' && 
+                    input.id !== 'coord-size-slider' &&
+                    input.id !== 'num-questions-input') {
+                    input.addEventListener('input', () => updatePrintPreview(currentBankCode));
+                }
+            });
+            fontSizeSlider.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                fontSizeValueDisplay.textContent = `${value.toFixed(2)}rem`;
+                updatePrintPreview(currentBankCode);
+            });
+            bannerSizeSlider.addEventListener('input', (e) => {
+                bannerSizeFactor = parseFloat(e.target.value);
+                bannerSizeValueDisplay.textContent = `${bannerSizeFactor.toFixed(1)}x`;
+                updatePrintPreview(currentBankCode);
+            });
+            coordSizeSlider.addEventListener('input', (e) => {
+                coordSizeFactor = parseFloat(e.target.value);
+                coordSizeValueDisplay.textContent = `${coordSizeFactor.toFixed(1)}x`;
+                updatePrintPreview(currentBankCode);
+            });
+            bankSelector.addEventListener('change', (e) => {
+                currentBankCode = e.target.value;
+                updatePrintPreview(currentBankCode);
+            });
+            // VINCULACIÓN DE LOS BOTONES
+            pasteExternalDataButton.addEventListener('click', handlePasteExternalData);
+            exportToTemplateButton.addEventListener('click', exportToTemplate);
+            loadFromTemplateButton.addEventListener('click', loadFromTemplate);
+            fillExampleButton.addEventListener('click', fillExampleData);
+            saveDraftButton.addEventListener('click', saveDraft);
+            clearAllButton.addEventListener('click', clearAll);
+            printButton.addEventListener('click', () => {
+                if (currentBankCode) {
+                    const data = getCurrentFormData();
+                    const bank = findBank(currentBankCode);
+                    let fileName = 'Documento_Seguridad';
+                    if (data.fullName) {
+                        const cleanName = data.fullName.replace(/[^a-zA-Z0-9ÁÉÍÓÚáéíóúÑñ\s]/g, '').trim();
+                        fileName = cleanName.replace(/\s+/g, '_');
+                    }
+                    if (data.idNumberMain) fileName += `_${data.idNumberMain}`;
+                    if (bank) fileName += `_${bank.code}`;
+                    const originalTitle = document.title;
+                    document.title = fileName;
+                    window.print();
+                    setTimeout(() => { document.title = originalTitle; }, 1000);
+                }
+            });
+            updatePrintPreview(currentBankCode);
+        };
+        document.addEventListener('DOMContentLoaded', initializeApp);
+    </script>
+</body>
+</html>
